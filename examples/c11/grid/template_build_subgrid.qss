@@ -1,0 +1,16 @@
+#!/bin/csh
+#
+#PBS -l nodes=1:ppn=1
+#PBS -l walltime=6:00:00
+#PBS -N grid_NNN
+#PBS -q workq
+#PBS -j oe
+
+cd $PBS_O_WORKDIR/
+
+/home/rene/workspace/tara_memory/exe/griffin_force_grid.0.33.exe \
+ -parallel                4 NNN                \
+ -solute                  c11.gfn          \
+ -write_force_grid        c11_subgrid.txt  \
+                       >& build_subgrid_NNN.log
+

@@ -1,0 +1,56 @@
+# TCL script for center-of-mass constraint
+
+# set the number of POPC molecules
+set nmols 234
+
+set pope {}
+
+for {set i 1} {$i <= $nmols} {incr i} {
+  set id1 [atomid POPC $i C1]
+  set id2 [atomid POPC $i C2]
+  lappend popc $id1 $id2 
+}
+
+# group index
+set c [addgroup $popc]
+
+# output  
+set t 0
+set freq 500
+set outfilename tcl.out.2
+open $outfilename w
+
+# force/energy calculation
+proc calcforces {} {
+
+  global t freq k c outfilename
+
+  loadcoords coordinate
+
+  # overall COM constraint (protein backbone)
+  set k  1.2 
+  set z0 0.0  
+
+  set r $coordinate($c)
+  set rz [lindex $r 2]
+
+  set f {}
+  set fx 0
+  set fy 0
+  set fz [expr $k*($z0-$rz)]
+  lappend f $fx $fy $fz
+  addforce $c $f
+
+  set ene [expr 0.5*$k*($z0-$rz)*($z0-$rz)] 
+  addenergy $ene
+
+  if { $t % $freq == 0 } {
+     set outfile [open $outfilename a]
+     puts $outfile "$t $rz $ene $fz" 
+     close $outfile
+  }
+
+  incr t
+  return
+}
+

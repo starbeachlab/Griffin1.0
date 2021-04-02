@@ -1,0 +1,40 @@
+OBJ = \
+source/storage/limits3D.o \
+source/geometry/surf_grid.o \
+source/geometry/surface_factory.o \
+source/molecule/molecule_factory.o \
+source/geometry/volume_functions.o \
+source/string/string_functions.o \
+source/string/io_string_functions.o \
+source/math/vector3N.o \
+source/math/vector.o \
+source/math/vector_functions.o \
+source/molecule/atom.o \
+source/utilities/id.o \
+source/molecule/element_data_map.o \
+source/geometry/point_surface_object.o \
+source/geometry/directed_point_surface_object.o \
+source/geometry/point_surface_sphere.o \
+source/molecule/membrane.o \
+main/carver.o
+
+CXX = g++
+
+NAME = bin/griffin_carver.exe
+
+### use -O3 for best performance, -g -pg for debugging ###
+#CPPFLAGS = -Wall -g -pg -fmessage-length=0 -Wno-deprecated
+CPPFLAGS = -Wall  -O3   -fmessage-length=0 -Wno-deprecated
+
+%.o: %.cc %.cpp 
+	$(CXX) -c $(CPPFLAGS)  -o $@  $<
+
+all: $(NAME)
+
+$(NAME): $(OBJ)
+	$(CXX) -o $(NAME) $(OBJ) 
+
+clean:
+#	rm -f $(NAME)
+	rm -f $(OBJ)
+

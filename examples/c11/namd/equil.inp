@@ -1,0 +1,115 @@
+# NAMD i/o file
+
+set sys popc_carved
+set i 1
+set j [expr $i - 1]
+set charmmdir /home/jose/software/charmm/c34a2/toppar
+
+# --- integration ---
+numsteps             50000
+timestep             1.0
+firsttimestep        0
+
+# --- input files ---
+paraTypeCharmm       on
+parameters           $charmmdir/par_all27_prot_lipid.prm
+structure            $sys.xpsf
+coordinates          $sys.pdb
+if { $i == 1 } {
+temperature          298
+} else {
+bincoordinates       $sys.equil.$j.rst.coor
+binvelocities        $sys.equil.$j.rst.vel
+}
+
+# --- output files ---
+binaryoutput         no
+outputname           $sys.equil.$i
+restartname          $sys.equil.$i.rst
+restartfreq          100 
+restartsave          no
+binaryrestart        yes
+DCDfile              $sys.equil.$i.dcd
+DCDfreq              100
+DCDUnitCell          yes
+
+# --- stdout options ---
+outputEnergies       100 
+mergeCrossterms      no
+outputMomenta        0
+outputPressure       0
+outputTiming         100 
+
+# --- langevin options ---
+langevin             on
+langevinTemp         298
+langevinDamping      100
+langevinHydrogen     off
+
+# --- pressure ---
+useGroupPressure     yes
+useFlexibleCell      yes
+useConstantArea      yes
+LangevinPiston       on
+LangevinPistonTarget 1.01325
+LangevinPistonPeriod 200
+LangevinPistonDecay  50
+LangevinPistonTemp   298
+
+# --- constraints ---
+rigidBonds           all
+rigidTolerance       0.00000001
+rigidIterations      100
+useSettle            on
+
+# -- non-bonded interactions ---
+exclude              scaled1-4
+1-4scaling           1.0
+switching            on
+switchdist           10
+cutoff               12
+dielectric           1.0
+PME                  yes
+PMETolerance         0.000001
+PMEInterpOrder       6
+PMEGridSizeX         100 
+PMEGridSizeY         100
+PMEGridSizeZ         90
+
+# -- MTS --
+nonbondedFreq        1
+fullElectFrequency   1
+
+# --- non-bonded list ---
+stepspercycle        10
+pairlistdist         14
+pairlistsPerCycle    2
+pairlistShrink       0.01
+pairlistGrow         0.01
+pairlistTrigger      0.30 
+
+# --- boundary options ---
+if { $i == 1 } {
+cellOrigin           0 0 0
+cellBasisVector1     100.0   0     0
+cellBasisVector2       0   100.0   0
+cellBasisVector3       0     0    90.0     
+} else {
+extendedSystem       $sys.equil.$j.rst.xsc
+}
+XSTfile              $sys.equil.$i.xst
+XSTfreq              1
+wrapWater            on
+wrapAll              on
+wrapNearest          on
+
+# --- restraints ---
+tclForces            on
+tclForcesScript      tcl.inp
+
+# --- external forces ---
+extForces            on
+extForcesCommand     /home/rene/workspace/tara_memory/exe/griffin_messenger.0.33.exe -forces
+extCoordFilename     namdx.tmp
+extForceFilename     namdf.tmp
+

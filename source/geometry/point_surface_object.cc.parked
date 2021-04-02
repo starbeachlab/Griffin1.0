@@ -1,0 +1,48 @@
+////////////////////////////////////////////////
+//!  surf_object.h
+//!
+//!
+//!
+//!  @date Dec 18, 2008
+//!  @author: Rene Staritzbichler
+//!  @example:
+////////////////////////////////////////////////
+
+#include "../../header/geometry/point_surface_object.h"
+/*
+namespace geom
+{
+
+	PointSurfaceObject *PointSurfaceObject::Clone() const{ return new PointSurfaceObject( *this);}
+
+//	const math::Vector3N &PointSurfaceObject::GetPosition() const{ return math::Vector3N( *this);}
+
+//	void PointSurfaceObject::SetPosition( const math::Vector3N &NEWPOS){ *this = NEWPOS;} // PointSurfaceObject::Object::math::Vector3N::operator = ( NEWPOS);}
+
+
+		const boost::shared_ptr< PointSurface> &PointSurfaceObject::GetSurface() const
+		{ return m_Surf;}
+
+ 	const boost::shared_ptr< PointSurface> &PointSurfaceObject::CalculateSurface( const float &RESOLUTION) const
+		{
+			boost::shared_ptr< math::IterationVector< float> > iter( PointSurfaceObject::Object::GetIterationVector());
+			boost::shared_ptr< math::Function< math::Vector3N, math::Vector3N> > trans( PointSurfaceObject::Object::GetCoordinateTransformation());
+//			m_Surf = boost::shared_ptr< PointSurface>( new PointSurface( math::Integrator< math::Vector3N, std::vector< math::Vector3N> >( iter, trans)()));
+			return m_Surf;
+		}
+
+ 	std::ostream& PointSurfaceObject::Write( std::ostream &STREAM) const
+		{
+//			STREAM << m_Position[0] << "  " << m_Position[1] << "  " << m_Position[2]<< "  " << m_NormalVector[0] << "  " << m_NormalVector[1] << "  " << m_NormalVector[2] << std::endl;
+			return STREAM;
+		}
+
+ 	std::istream& PointSurfaceObject::Read( std::istream &STREAM)
+		{
+//			STREAM << m_Position[0] << "  " << m_Position[1] << "  " << m_Position[2]<< "  " << m_NormalVector[0] << "  " << m_NormalVector[1] << "  " << m_NormalVector[2] << std::endl;
+			return STREAM;
+		}
+
+
+} // end namespace geom
+*/

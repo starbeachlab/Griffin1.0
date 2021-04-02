@@ -1,0 +1,67 @@
+#!/bin/bash
+
+#PBS -l nodes=2:ppn=8
+#PBS -l walltime=48:00:00
+#PBS -N c11
+#PBS -j oe
+#PBS -m n
+
+# user defined variables
+
+griffin_msg=/home/rene/workspace/tara_memory/exe/griffin_messenger.0.33.exe 
+griffin=/home/rene/workspace/tara_memory/exe/griffin_daemon_mpi.0.33.exe  
+namd=/home/jose/software/namd/NAMD_2.7b2_Source/Linux-x86_64-MPI-g++/namd2
+mpi=/opt/parastation/bin/mpiexec
+
+# NEEDED !
+unset OMP_NUM_THREADS
+
+cd $PBS_O_WORKDIR
+ 
+
+# create reference file for distributing resources
+cat $PBS_NODEFILE > original_nodefile.txt
+
+###########################
+# start griffin force field
+# extract resources from original nodefile for Griffin (here using 2 cpus)
+cat original_nodefile.txt | awk '{ if( $0 != prev){ for(i=0;i<2;i++){print $0;} prev = $0;}}' > gfn_nodefile.txt
+n=$(cat gfn_nodefile.txt| wc -l)
+
+# redirect environment variable used by mpi
+PBS_NODEFILE=gfn_nodefile.txt
+
+# launch griffin using grid created by grid_forces: put to background
+$mpi -np $n $griffin  \
+  -force_grid               ../grid/c11_grid.txt             \
+  -coordinate_format        namd                             \
+  -lipid_names              POPC                             \
+  -neighbor_list_update     10                               \
+  -sforce_scale             3.0                              \
+  -sforce_exclude_hydrogens                                  \
+  -logfile                  griffin_daemon_3D_               \
+  -sforce_reset_min_angle   110                              \
+  >& mpi.log &
+  
+# wait for griffin to be ready before continuing
+$griffin_msg -wait >& wait.log
+
+# setup griffin (tell it what files will be read and to expect during simulation)
+$griffin_msg -setup popc_carved.gfn namdx.tmp namdf.tmp  >& setup.log
+
+################################################
+# start MD
+# filter resources from original nodefile for MD (here using 6 cpus)
+cat original_nodefile.txt | awk '{ if( $0 != prev){ for(i=0;i<6;i++){print $0;} prev = $0;}}' > md_nodefile.txt
+n=$(cat md_nodefile.txt | wc -l)
+
+# redirect environment variable
+PBS_NODEFILE=md_nodefile.txt
+
+# run namd in parallel including griffin_messenger -forces command 
+$mpi  -np $n  $namd equil.inp >& equil.log
+
+
+# terminate griffin after termination of MD
+$griffin_msg  -terminate >& terminate.log
+

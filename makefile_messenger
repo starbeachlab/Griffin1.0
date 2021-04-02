@@ -1,0 +1,26 @@
+OBJ = \
+source/string/io_string_functions.o \
+source/string/string_functions.o \
+main/messenger.o
+
+
+CXX = g++
+
+NAME = bin/griffin_messenger.exe
+
+### use -O3 for best performance, -g -pg for debugging ###
+#CPPFLAGS = -Wall -g -pg 
+CPPFLAGS = -Wall  -O3   -fmessage-length=0 -Wno-deprecated
+
+%.o: %.cc %.cpp 
+	$(CXX) -c $(CPPFLAGS)  -o $@  $<
+
+all: $(NAME)
+
+$(NAME): $(OBJ)
+	$(CXX) -o $(NAME) $(OBJ)  
+
+clean:
+#	rm -f $(NAME)
+	rm -f $(OBJ)
+

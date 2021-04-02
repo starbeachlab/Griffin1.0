@@ -1,0 +1,28 @@
+* charmm i/o file
+*
+
+set ffdir = /home/jose/software/charmm/c34a2/toppar/
+
+open read card unit 1 name @ffdir/top_all27_prot_lipid.rtf
+read rtf card unit 1
+close unit 1
+
+open read card unit 1 name @ffdir/par_all27_prot_lipid.prm
+read param card unit 1
+close unit 1
+
+read sequence POPC 234
+generate POPC first NONE last NONE
+
+read sequence TIP3 16272
+generate WAT first NONE last NONE noangle nodihedral
+
+open write card unit 1 name popc_carved.psf
+write psf card unit 1
+close unit 1
+
+open write card unit 1 name popc_carved.xpsf
+write psf card unit 1 xplor
+close unit 1
+
+stop
